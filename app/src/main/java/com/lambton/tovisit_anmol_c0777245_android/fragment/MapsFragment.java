@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
@@ -34,6 +35,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.lambton.tovisit_anmol_c0777245_android.R;
+import com.lambton.tovisit_anmol_c0777245_android.activities.FavoritePlacesActivity;
 import com.lambton.tovisit_anmol_c0777245_android.activities.MainActivity;
 import com.lambton.tovisit_anmol_c0777245_android.dataPass.IPassData;
 import com.lambton.tovisit_anmol_c0777245_android.roomDatabase.FavoritePlaces;
@@ -48,6 +50,8 @@ import java.util.Locale;
 public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragListener, GoogleMap.OnMarkerClickListener{
 
     private static final String TAG = "MapsFragment";
+    public static final String TOAST_ID = "Toast";
+    public static final String SNACKBAR_ID = "Snackbar";
 
     FusedLocationProviderClient mClient;
     private FavoritePlacesRoomDb favoritePlacesRoomDb;
@@ -218,7 +222,7 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
                     address += addresses.get(0).getPostalCode() + " ";
                 if (addresses.get(0).getThoroughfare() != null)
                     address += addresses.get(0).getThoroughfare();
-                Toast.makeText(getActivity(), address, Toast.LENGTH_SHORT).show();
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -264,7 +268,7 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                displaySnackBar("No inserted to Favorite Places list");
+                displaySnackBar("No inserted to Favorite Places list", SNACKBAR_ID);
             }
         });
         AlertDialog alertDialog = builder.create();
@@ -274,7 +278,6 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
 
     private void saveToFavoritePlaces(Marker marker) {
         String address = locationName(marker);
-        Toast.makeText(getActivity(), address, Toast.LENGTH_SHORT).show();
         //getting current date
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
@@ -283,14 +286,19 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
         FavoritePlaces favoritePlaces = new FavoritePlaces(marker.getPosition().latitude, marker.getPosition().longitude,currentDate, address);
         favoritePlacesRoomDb.favoritePlacesDao().insertFavoritePlaces(favoritePlaces);
         
-        displaySnackBar("Place inserted to favorite list");
+        displaySnackBar("Place inserted to favorite list", TOAST_ID);
         displayFavoriteListActivity();
     }
 
     private void displayFavoriteListActivity() {
+       startActivity(new Intent(getActivity(), FavoritePlacesActivity.class));
+       getActivity().finish();
     }
 
-    private void displaySnackBar(String text){
+    private void displaySnackBar(String text, String id){
+        if(id == TOAST_ID){
+            Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+        }else if (id == SNACKBAR_ID){
         Snackbar.make(getActivity().findViewById(android.R.id.content),text,Snackbar.LENGTH_LONG)
                 .setAction("CLOSE", new View.OnClickListener() {
                     @Override
@@ -299,5 +307,6 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
                 })
                 .setActionTextColor(getResources().getColor(android.R.color.holo_red_light ))
                 .show();
+    }
     }
 }
