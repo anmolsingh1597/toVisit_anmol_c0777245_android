@@ -48,7 +48,7 @@ public class GetByVolley {
         }
     }
 
-    public static void getDirection(JSONObject jsonObject, GoogleMap googleMap, LatLng location) {
+    public static void getDirection(JSONObject jsonObject, GoogleMap googleMap, LatLng location, String placeName) {
         HashMap<String, String> distances = null;
         VolleyParser directionParser = new VolleyParser();
         distances = directionParser.parseDistance(jsonObject);
@@ -58,19 +58,19 @@ public class GetByVolley {
 
         String[] directionsList;
         directionsList = directionParser.parseDirections(jsonObject);
-        displayDirection(directionsList, distance, duration, googleMap, location);
+        displayDirection(directionsList, distance, duration, googleMap, location, placeName);
     }
 
-    private static void displayDirection(String[] directionsList, String distance, String duration, GoogleMap googleMap, LatLng location) {
+    private static void displayDirection(String[] directionsList, String distance, String duration, GoogleMap googleMap, LatLng location, String placeName) {
         googleMap.clear();
         LatLng latLng = new LatLng(location.latitude, location.longitude);
         MarkerOptions options = new MarkerOptions().position(latLng)
-                .title("Duration : " + duration)
-                .snippet("Distance : " + distance);
+                .title(placeName)
+                .snippet("Duration : " + duration + " || Distance : " + distance);
         googleMap.addMarker(options);
         for (int i=0; i<directionsList.length; i++) {
             PolylineOptions polylineOptions = new PolylineOptions()
-                    .color(Color.RED)
+                    .color(Color.BLUE)
                     .width(10)
                     .addAll(PolyUtil.decode(directionsList[i]));
             googleMap.addPolyline(polylineOptions);

@@ -44,6 +44,8 @@ public class DirectionAndDistanceActivity extends FragmentActivity implements On
 
     LatLng destinationLatLng;
 
+    String placeName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +95,7 @@ public class DirectionAndDistanceActivity extends FragmentActivity implements On
 
                 LatLng latLng = new LatLng(places.getLatitude(), places.getLongitude());
                 destinationLatLng = latLng;
+                placeName = places.getLocationName();
                 mMap.addMarker(new MarkerOptions().position(latLng).title(places.getLocationName()));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
             }
@@ -106,17 +109,17 @@ public class DirectionAndDistanceActivity extends FragmentActivity implements On
         directionFloatingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                directionFromUserTodestination();
+                directionFromUserToDestination();
             }
         });
     }
 
-    private void directionFromUserTodestination() {
+    private void directionFromUserToDestination() {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 getDirectionUrl(destinationLatLng), null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                GetByVolley.getDirection(response, mMap, destinationLatLng);
+                GetByVolley.getDirection(response, mMap, destinationLatLng, placeName);
             }
         }, new Response.ErrorListener() {
             @Override
