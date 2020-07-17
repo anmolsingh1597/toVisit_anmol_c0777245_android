@@ -29,7 +29,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.lambton.tovisit_anmol_c0777245_android.R;
+import com.lambton.tovisit_anmol_c0777245_android.dataPass.IPassData;
 import com.lambton.tovisit_anmol_c0777245_android.fragment.MapsFragment;
+import com.lambton.tovisit_anmol_c0777245_android.volley.GetByVolley;
+import com.lambton.tovisit_anmol_c0777245_android.volley.VolleySingleton;
 
 import org.json.JSONObject;
 
@@ -172,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
         googlePlaceUrl.append("location="+latitude+","+longitude);
         googlePlaceUrl.append(("&radius="+RADIUS));
         googlePlaceUrl.append("&type="+placeType);
-        googlePlaceUrl.append("&key="+getString(R.string.google_place_key));
+        googlePlaceUrl.append("&key="+getString(R.string.google_maps_key));
         Log.d(TAG, "getDirectionUrl: " + googlePlaceUrl);
         return googlePlaceUrl.toString();
     }
@@ -181,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
         StringBuilder googleDirectionUrl = new StringBuilder("https://maps.googleapis.com/maps/api/directions/json?");
         googleDirectionUrl.append("origin="+userLocation.latitude+","+userLocation.longitude);
         googleDirectionUrl.append(("&destination="+location.latitude+","+location.longitude));
-        googleDirectionUrl.append("&key="+getString(R.string.google_place_key));
+        googleDirectionUrl.append("&key="+getString(R.string.google_maps_key));
         Log.d(TAG, "getDirectionUrl: " + googleDirectionUrl);
         return googleDirectionUrl.toString();
     }

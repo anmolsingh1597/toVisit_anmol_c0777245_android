@@ -28,12 +28,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.lambton.tovisit_anmol_c0777245_android.R;
+import com.lambton.tovisit_anmol_c0777245_android.activities.MainActivity;
+import com.lambton.tovisit_anmol_c0777245_android.dataPass.IPassData;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class MapsFragment extends Fragment {
+public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragListener{
 
     private static final String TAG = "MapsFragment";
 
@@ -66,7 +68,7 @@ public class MapsFragment extends Fragment {
          * user has installed Google Play services and returned to the app.
          */
         @Override
-        public void onMapReady(GoogleMap googleMap) {
+        public void onMapReady(final GoogleMap googleMap) {
             if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
