@@ -6,6 +6,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
@@ -30,6 +32,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.lambton.tovisit_anmol_c0777245_android.R;
 import com.lambton.tovisit_anmol_c0777245_android.activities.MainActivity;
 import com.lambton.tovisit_anmol_c0777245_android.dataPass.IPassData;
@@ -38,7 +41,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragListener{
+public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragListener, GoogleMap.OnMarkerClickListener{
 
     private static final String TAG = "MapsFragment";
 
@@ -79,6 +82,7 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
             }
             mMap = googleMap;
             mMap.setOnMarkerDragListener(MapsFragment.this);
+            mMap.setOnMarkerClickListener(MapsFragment.this);
             mMap.setMyLocationEnabled(true);
 
             mapTypeRadioGroup = getActivity().findViewById(R.id.maps_type_group);
@@ -210,5 +214,38 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+        
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Do you want to save this to your list of `Favorite Places`?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+               saveToFavoritePlaces(marker);
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Snackbar.make(getActivity().findViewById(android.R.id.content),"No inserted to Favorite Places list",Snackbar.LENGTH_LONG)
+                        .setAction("CLOSE", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                            }
+                        })
+                        .setActionTextColor(getResources().getColor(android.R.color.holo_red_light ))
+                        .show();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        return false;
+    }
+
+    private void saveToFavoritePlaces(Marker marker) {
     }
 }
