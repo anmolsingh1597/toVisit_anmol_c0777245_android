@@ -120,6 +120,7 @@ public class FavoritePlacesAdapter extends RecyclerView.Adapter<FavoritePlacesAd
         Intent intent = new Intent(context, DirectionAndDistanceActivity.class);
         intent.putExtra("placeID", favoritePlaces.getId());
         context.startActivity(intent);
+        
     }
 
     @Override

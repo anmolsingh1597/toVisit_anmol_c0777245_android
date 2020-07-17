@@ -4,8 +4,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +22,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.lambton.tovisit_anmol_c0777245_android.R;
@@ -29,10 +33,14 @@ import com.lambton.tovisit_anmol_c0777245_android.volley.VolleySingleton;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
-public class DirectionAndDistanceActivity extends FragmentActivity implements OnMapReadyCallback{
+public class DirectionAndDistanceActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
 
     private static final String TAG = "DirectionAndDistanceActivity";
     private GoogleMap mMap;
@@ -58,7 +66,6 @@ public class DirectionAndDistanceActivity extends FragmentActivity implements On
     }
 
 
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -77,6 +84,8 @@ public class DirectionAndDistanceActivity extends FragmentActivity implements On
         favoritePlaces = favoritePlacesRoomDb.favoritePlacesDao().getAllFavoritePlaces();
 
         mMap = googleMap;
+        mMap.setOnMarkerDragListener(DirectionAndDistanceActivity.this);
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -90,14 +99,17 @@ public class DirectionAndDistanceActivity extends FragmentActivity implements On
         mMap.setMyLocationEnabled(true);
 
 
-        for(FavoritePlaces places: favoritePlaces){
-            if(places.getId() == placeID){
+        for (FavoritePlaces places : favoritePlaces) {
+            if (places.getId() == placeID) {
 
                 LatLng latLng = new LatLng(places.getLatitude(), places.getLongitude());
                 destinationLatLng = latLng;
                 placeName = places.getLocationName();
-                mMap.addMarker(new MarkerOptions().position(latLng).title(places.getLocationName()));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
+                mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title(places.getLocationName())
+                        .draggable(true));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
             }
         }
         floatingButtonAction();
@@ -132,11 +144,64 @@ public class DirectionAndDistanceActivity extends FragmentActivity implements On
 
     private String getDirectionUrl(LatLng location) {
         StringBuilder googleDirectionUrl = new StringBuilder("https://maps.googleapis.com/maps/api/directions/json?");
-        googleDirectionUrl.append("origin="+mMap.getMyLocation().getLatitude()+","+mMap.getMyLocation().getLongitude());
-        googleDirectionUrl.append(("&destination="+location.latitude+","+location.longitude));
-        googleDirectionUrl.append("&key="+getString(R.string.google_maps_key));
+        googleDirectionUrl.append("origin=" + mMap.getMyLocation().getLatitude() + "," + mMap.getMyLocation().getLongitude());
+        googleDirectionUrl.append(("&destination=" + location.latitude + "," + location.longitude));
+        googleDirectionUrl.append("&key=" + getString(R.string.google_maps_key));
         Log.d(TAG, "getDirectionUrl: " + googleDirectionUrl);
         return googleDirectionUrl.toString();
     }
 
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this, FavoritePlacesActivity.class));
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, MMM d");
+        String currentDate = simpleDateFormat.format(cal.getTime());
+        favoritePlacesRoomDb.favoritePlacesDao().updateFavoritePlaces(placeID, destinationLatLng.latitude, destinationLatLng.longitude, currentDate, placeName);
+        finish();
+
+    }
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    private String locationName(Marker marker) {
+        LatLng latLng = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
+        String address = "";
+        Geocoder geocoder = new Geocoder(DirectionAndDistanceActivity.this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+            if (addresses != null && addresses.size() > 0) {
+
+                if (addresses.get(0).getSubThoroughfare() != null)
+                    address += addresses.get(0).getSubThoroughfare() + ", ";
+                if (addresses.get(0).getThoroughfare() != null)
+                    address += addresses.get(0).getThoroughfare() + ", ";
+                if (addresses.get(0).getLocality() != null)
+                    address += addresses.get(0).getLocality() + ", ";
+                if (addresses.get(0).getAdminArea() != null)
+                    address += addresses.get(0).getAdminArea();
+                if (addresses.get(0).getPostalCode() != null)
+                    address += "\n" + addresses.get(0).getPostalCode();
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return address;
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        destinationLatLng = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
+        placeName = locationName(marker);
+
+    }
 }

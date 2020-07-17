@@ -4,6 +4,12 @@
     tools:context="com.s20.directiondemo.MainActivity">
 
     <item
+        android:id="@+id/btnSearch"
+        android:icon="@drawable/search_location"
+        android:title="Search"
+        app:showAsAction="always"
+        app:actionViewClass="android.widget.SearchView"/>
+    <item
         android:id="@+id/action_favorite_place_list"
         android:orderInCategory="100"
         android:title="@string/favorite_places_list"

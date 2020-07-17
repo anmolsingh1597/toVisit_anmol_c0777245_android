@@ -66,7 +66,8 @@ public class GetByVolley {
         LatLng latLng = new LatLng(location.latitude, location.longitude);
         MarkerOptions options = new MarkerOptions().position(latLng)
                 .title(placeName)
-                .snippet("Duration : " + duration + " || Distance : " + distance);
+                .snippet("Duration : " + duration + " || Distance : " + distance)
+                .draggable(true);
         googleMap.addMarker(options);
         for (int i=0; i<directionsList.length; i++) {
             PolylineOptions polylineOptions = new PolylineOptions()
