@@ -7,21 +7,31 @@ import androidx.fragment.app.Fragment;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.lambton.tovisit_anmol_c0777245_android.R;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class MapsFragment extends Fragment {
 
@@ -106,6 +116,13 @@ public class MapsFragment extends Fragment {
         mMap.addMarker(options);
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mClient = LocationServices.getFusedLocationProviderClient(getActivity());
+    }
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -121,6 +138,52 @@ public class MapsFragment extends Fragment {
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
+        }
+    }
+
+    public void setHomeMarker(Location location) {
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+    }
+
+    public void getDestination(IPassData callback) {
+        callback.destinationSelected(destination, mMap);
+    }
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        destination.setLatitude(marker.getPosition().latitude);
+        destination.setLongitude(marker.getPosition().longitude);
+
+        Log.d(TAG, "onMarkerDragEnd: " + destination.getLatitude());
+
+        Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(destination.getLatitude(), destination.getLongitude(), 1);
+            if (addresses != null && addresses.size() > 0) {
+                String address = "";
+                if (addresses.get(0).getAdminArea() != null)
+                    address += addresses.get(0).getAdminArea() + " ";
+                if (addresses.get(0).getLocality() != null)
+                    address += addresses.get(0).getLocality() + " ";
+                if (addresses.get(0).getPostalCode() != null)
+                    address += addresses.get(0).getPostalCode() + " ";
+                if (addresses.get(0).getThoroughfare() != null)
+                    address += addresses.get(0).getThoroughfare();
+                Toast.makeText(getActivity(), address, Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
