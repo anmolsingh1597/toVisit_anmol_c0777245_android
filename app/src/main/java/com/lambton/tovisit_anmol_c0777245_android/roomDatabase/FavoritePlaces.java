@@ -14,8 +14,12 @@ public class FavoritePlaces {
     private int id;
 
     @NonNull
-    @ColumnInfo(name = "latLng")
-    private LatLng latLng;
+    @ColumnInfo(name = "latitude")
+    private double latitude;
+
+    @NonNull
+    @ColumnInfo(name = "longitude")
+    private double longitude;
 
     @NonNull
     @ColumnInfo(name = "assignedDate")
@@ -25,9 +29,9 @@ public class FavoritePlaces {
     @ColumnInfo(name = "locationName")
     private String locationName;
 
-    public FavoritePlaces(int id, @NonNull LatLng latLng, @NonNull String assignedDate, @NonNull String locationName) {
-        this.id = id;
-        this.latLng = latLng;
+    public FavoritePlaces(@NonNull double latitude, double longitude, @NonNull String assignedDate, @NonNull String locationName) {
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.assignedDate = assignedDate;
         this.locationName = locationName;
     }
@@ -40,13 +44,20 @@ public class FavoritePlaces {
         this.id = id;
     }
 
-    @NonNull
-    public LatLng getLatLng() {
-        return latLng;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public void setLatLng(@NonNull LatLng latLng) {
-        this.latLng = latLng;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     @NonNull

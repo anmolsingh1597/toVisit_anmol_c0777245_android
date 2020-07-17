@@ -20,8 +20,8 @@ public interface FavoritePlacesDao {
     @Query("DELETE FROM favoriteplaces WHERE id = :id")
     int favoritePlaces(int id);
 
-    @Query("UPDATE favoriteplaces SET latLng = :latLng, assignedDate= :assignedDate, locationName = :locationName WHERE id = :id")
-    int updateFavoritePlaces(int id, LatLng latLng, String assignedDate, String locationName);
+    @Query("UPDATE favoriteplaces SET latitude = :latitude, longitude= :longitude, assignedDate= :assignedDate, locationName = :locationName WHERE id = :id")
+    int updateFavoritePlaces(int id, double latitude, double longitude, String assignedDate, String locationName);
 
     @Query("SELECT * FROM favoriteplaces ORDER BY locationName")
     List<FavoritePlaces> getAllFavoritePlaces();

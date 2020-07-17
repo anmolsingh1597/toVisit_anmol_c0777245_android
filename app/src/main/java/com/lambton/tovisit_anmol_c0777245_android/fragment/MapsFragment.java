@@ -36,8 +36,12 @@ import com.google.android.material.snackbar.Snackbar;
 import com.lambton.tovisit_anmol_c0777245_android.R;
 import com.lambton.tovisit_anmol_c0777245_android.activities.MainActivity;
 import com.lambton.tovisit_anmol_c0777245_android.dataPass.IPassData;
+import com.lambton.tovisit_anmol_c0777245_android.roomDatabase.FavoritePlaces;
+import com.lambton.tovisit_anmol_c0777245_android.roomDatabase.FavoritePlacesRoomDb;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -46,6 +50,7 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
     private static final String TAG = "MapsFragment";
 
     FusedLocationProviderClient mClient;
+    private FavoritePlacesRoomDb favoritePlacesRoomDb;
 
     GoogleMap mMap;
 
@@ -77,6 +82,10 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
          */
         @Override
         public void onMapReady(final GoogleMap googleMap) {
+
+            // Room database
+            favoritePlacesRoomDb = FavoritePlacesRoomDb.getINSTANCE(getActivity());
+
             if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
@@ -216,6 +225,30 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
         }
     }
 
+    private String locationName(Marker marker){
+        LatLng latLng =  new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
+        String address = "";
+        Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latLng.latitude,latLng.longitude, 1);
+            if (addresses != null && addresses.size() > 0) {
+
+                if (addresses.get(0).getAdminArea() != null)
+                    address += addresses.get(0).getAdminArea() + " ";
+                if (addresses.get(0).getLocality() != null)
+                    address += addresses.get(0).getLocality() + " ";
+                if (addresses.get(0).getPostalCode() != null)
+                    address += addresses.get(0).getPostalCode() + " ";
+                if (addresses.get(0).getThoroughfare() != null)
+                    address += addresses.get(0).getThoroughfare();
+                Toast.makeText(getActivity(), address, Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return address;
+    }
+
     @Override
     public boolean onMarkerClick(final Marker marker) {
         
@@ -231,14 +264,7 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Snackbar.make(getActivity().findViewById(android.R.id.content),"No inserted to Favorite Places list",Snackbar.LENGTH_LONG)
-                        .setAction("CLOSE", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                            }
-                        })
-                        .setActionTextColor(getResources().getColor(android.R.color.holo_red_light ))
-                        .show();
+                displaySnackBar("No inserted to Favorite Places list");
             }
         });
         AlertDialog alertDialog = builder.create();
@@ -247,5 +273,31 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
     }
 
     private void saveToFavoritePlaces(Marker marker) {
+        String address = locationName(marker);
+        Toast.makeText(getActivity(), address, Toast.LENGTH_SHORT).show();
+        //getting current date
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        String currentDate = simpleDateFormat.format(cal.getTime());
+        // insert into room db
+        FavoritePlaces favoritePlaces = new FavoritePlaces(marker.getPosition().latitude, marker.getPosition().longitude,currentDate, address);
+        favoritePlacesRoomDb.favoritePlacesDao().insertFavoritePlaces(favoritePlaces);
+        
+        displaySnackBar("Place inserted to favorite list");
+        displayFavoriteListActivity();
+    }
+
+    private void displayFavoriteListActivity() {
+    }
+
+    private void displaySnackBar(String text){
+        Snackbar.make(getActivity().findViewById(android.R.id.content),text,Snackbar.LENGTH_LONG)
+                .setAction("CLOSE", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                    }
+                })
+                .setActionTextColor(getResources().getColor(android.R.color.holo_red_light ))
+                .show();
     }
 }
