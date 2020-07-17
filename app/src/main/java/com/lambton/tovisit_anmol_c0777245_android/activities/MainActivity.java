@@ -81,20 +81,28 @@ public class MainActivity extends AppCompatActivity {
                 String url = "";
                 switch (tab.getPosition()) {
                     case 0:
-                        url = getPlaceUrl(userLocation.latitude, userLocation.latitude, "hospital");
+                        url = "";
+                        url = getPlaceUrl(userLocation.latitude, userLocation.longitude, "liquor_store");
+                        showNearbyPlaces(url);
                         break;
                     case 1:
+                        url = "";
                         url = getPlaceUrl(userLocation.latitude, userLocation.longitude, "restaurant");
+                        showNearbyPlaces(url);
                         break;
                     case 2:
-                        url = getPlaceUrl(userLocation.latitude, userLocation.latitude, "cafe");
+                        url = "";
+                        url = getPlaceUrl(userLocation.latitude, userLocation.longitude, "cafe");
+                        showNearbyPlaces(url);
                         break;
                     case 3:
-                        url = getPlaceUrl(userLocation.latitude, userLocation.latitude, "museum");
+                        url = "";
+                        url = getPlaceUrl(userLocation.latitude, userLocation.longitude, "museum");
+                        showNearbyPlaces(url);
                         break;
                 }
 
-                showNearbyPlaces(url);
+//                showNearbyPlaces(url);
             }
 
             @Override
@@ -268,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showLaunchNearbyPlaces(LatLng location) {
-        String url = getPlaceUrl(location.latitude, location.longitude, "hospital");
+        String url = getPlaceUrl(location.latitude, location.longitude, "liquor_store");
         showNearbyPlaces(url);
     }
 }
