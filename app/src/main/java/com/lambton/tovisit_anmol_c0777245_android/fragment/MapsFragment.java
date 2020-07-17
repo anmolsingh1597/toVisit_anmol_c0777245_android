@@ -292,7 +292,7 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
 
     private void displayFavoriteListActivity() {
        startActivity(new Intent(getActivity(), FavoritePlacesActivity.class));
-       getActivity().finish();
+//       getActivity().finish();
     }
 
     private void displaySnackBar(String text, String id){
