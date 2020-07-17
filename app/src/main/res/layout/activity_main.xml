@@ -68,6 +68,38 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_menu_directions" />
 
+    <RadioGroup
+        android:id="@+id/maps_type_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="@dimen/fab_margin">
+
+        <RadioButton
+            android:id="@+id/default_map"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/default_map" />
+
+        <RadioButton
+            android:id="@+id/hybrid_map"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hybrid_map" />
+
+        <RadioButton
+            android:id="@+id/terrain_map"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/terrain_map" />
+
+        <RadioButton
+            android:id="@+id/satellite_map"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/satellite_map" />
+    </RadioGroup>
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

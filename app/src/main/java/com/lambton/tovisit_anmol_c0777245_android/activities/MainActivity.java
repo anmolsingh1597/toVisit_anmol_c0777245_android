@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private LocationCallback mLocationCallback;
     private LocationRequest mLocationRequest;
 
+
+
     private LatLng userLocation;
 
     FragmentManager fragmentManager;
@@ -61,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         fragmentManager = getSupportFragmentManager();
         fragment = new MapsFragment();
@@ -86,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case 3:
                         url = getPlaceUrl(userLocation.latitude, userLocation.latitude, "museum");
+                        break;
                 }
 
                 showNearbyPlaces(url);

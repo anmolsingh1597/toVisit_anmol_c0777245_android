@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -53,6 +54,8 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
         return destLocation;
     }
 
+    RadioGroup mapTypeRadioGroup;
+
     LatLng destLocation;
     Location destination;
 
@@ -75,6 +78,24 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
             mMap = googleMap;
             mMap.setOnMarkerDragListener(MapsFragment.this);
             mMap.setMyLocationEnabled(true);
+
+            mapTypeRadioGroup = getActivity().findViewById(R.id.maps_type_group);
+
+            mapTypeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    if(checkedId == R.id.default_map){
+                        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                    }else if (checkedId == R.id.hybrid_map){
+                        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                    }else if (checkedId == R.id.terrain_map){
+                        mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                    }else if (checkedId == R.id.satellite_map){
+                        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                    }
+                }
+            });
+
 
             mClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
                 @Override
