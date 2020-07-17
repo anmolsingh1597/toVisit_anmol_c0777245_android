@@ -29,6 +29,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.lambton.tovisit_anmol_c0777245_android.R;
 import com.lambton.tovisit_anmol_c0777245_android.dataPass.IPassData;
@@ -123,19 +124,19 @@ public class MainActivity extends AppCompatActivity {
                 fragment.getDestination(new IPassData() {
                     @Override
                     public void destinationSelected(final Location location, final GoogleMap map) {
-                        /*Object[] dataTransfer = new Object[3];
-                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                        String url = getDirectionUrl(latLng);
-                        dataTransfer[0] = map;
-                        dataTransfer[1] = url;
-                        dataTransfer[2] = latLng;
-
-                        GetDirectionsData getDirectionsData = new GetDirectionsData();
-                        // execute asynchronously
-                        getDirectionsData.execute(dataTransfer);*/
-
-                        /*By Volley Library*/
-                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        if (location == null) {
+                            Snackbar.make(findViewById(android.R.id.content),"No Destination Selected",Snackbar.LENGTH_LONG)
+                                    .setAction("CLOSE", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            Toast.makeText(MainActivity.this, "Long Click to select destination", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .setActionTextColor(getResources().getColor(android.R.color.holo_red_light ))
+                                    .show();
+                        } else{
+                            /*By Volley Library*/
+                            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
                         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                                 getDirectionUrl(latLng), null, new Response.Listener<JSONObject>() {
@@ -150,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                         VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+                    }
                     }
                 });
             }
