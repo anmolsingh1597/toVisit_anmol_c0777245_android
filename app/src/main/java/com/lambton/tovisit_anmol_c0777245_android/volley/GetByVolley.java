@@ -48,6 +48,35 @@ public class GetByVolley {
         }
     }
 
+    public static void getDirection(JSONObject jsonObject, GoogleMap googleMap, LatLng location) {
+        HashMap<String, String> distances = null;
+        VolleyParser directionParser = new VolleyParser();
+        distances = directionParser.parseDistance(jsonObject);
+
+        String distance = distances.get("distance");
+        String duration = distances.get("duration");
+
+        String[] directionsList;
+        directionsList = directionParser.parseDirections(jsonObject);
+        displayDirection(directionsList, distance, duration, googleMap, location);
+    }
+
+    private static void displayDirection(String[] directionsList, String distance, String duration, GoogleMap googleMap, LatLng location) {
+        googleMap.clear();
+        LatLng latLng = new LatLng(location.latitude, location.longitude);
+        MarkerOptions options = new MarkerOptions().position(latLng)
+                .title("Duration : " + duration)
+                .snippet("Distance : " + distance);
+        googleMap.addMarker(options);
+        for (int i=0; i<directionsList.length; i++) {
+            PolylineOptions polylineOptions = new PolylineOptions()
+                    .color(Color.RED)
+                    .width(10)
+                    .addAll(PolyUtil.decode(directionsList[i]));
+            googleMap.addPolyline(polylineOptions);
+        }
+    }
+
     public static void getNearbyPlaces(JSONObject jsonObject, GoogleMap googleMap) {
         List<HashMap<String, String>> nearbyPlaces = null;
         VolleyParser dataParser = new VolleyParser();
