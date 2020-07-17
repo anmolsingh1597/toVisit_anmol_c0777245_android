@@ -3,6 +3,8 @@ package com.lambton.tovisit_anmol_c0777245_android.adapter;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lambton.tovisit_anmol_c0777245_android.R;
+import com.lambton.tovisit_anmol_c0777245_android.activities.DirectionAndDistanceActivity;
 import com.lambton.tovisit_anmol_c0777245_android.roomDatabase.FavoritePlaces;
 import com.lambton.tovisit_anmol_c0777245_android.roomDatabase.FavoritePlacesRoomDb;
 
@@ -69,14 +72,14 @@ public class FavoritePlacesAdapter extends RecyclerView.Adapter<FavoritePlacesAd
     @Override
     public void onBindViewHolder(@NonNull FavoritePlacesAdapter.FavoritePlacesListViewHolder holder, int position) {
         final FavoritePlaces favoritePlaces = favoritePlacesList.get(position);
-        holder.placeName.setText(favoritePlaces.getLocationName());
-        holder.lat.setText(String.valueOf(favoritePlaces.getLatitude()));
-        holder.lng.setText(String.valueOf(favoritePlaces.getLatitude()));
-        holder.date.setText(favoritePlaces.getAssignedDate());
+        holder.placeName.setText("Place: "+favoritePlaces.getLocationName());
+        holder.lat.setText("Latitude: "+String.valueOf(favoritePlaces.getLatitude()));
+        holder.lng.setText("Longitude: "+String.valueOf(favoritePlaces.getLatitude()));
+        holder.date.setText("Date: "+favoritePlaces.getAssignedDate());
         holder.itemView.findViewById(R.id.btn_show).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                jumpToMaps();
+                jumpToMaps(favoritePlaces);
             }
         });
         
@@ -113,7 +116,10 @@ public class FavoritePlacesAdapter extends RecyclerView.Adapter<FavoritePlacesAd
         notifyDataSetChanged();
     }
 
-    private void jumpToMaps() {
+    private void jumpToMaps(final FavoritePlaces favoritePlaces) {
+        Intent intent = new Intent(context, DirectionAndDistanceActivity.class);
+        intent.putExtra("placeID", favoritePlaces.getId());
+        context.startActivity(intent);
     }
 
     @Override

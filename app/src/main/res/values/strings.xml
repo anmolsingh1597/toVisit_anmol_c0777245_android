@@ -19,4 +19,6 @@
     <string name="terrain_map">Terrain Map</string>
     <string name="satellite_map">Satellite Map</string>
     <string name="liquor_store">Liquor</string>
+    <string name="favorite_places_list">Favorite Places List</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

@@ -2,6 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.s20.directiondemo.MainActivity">
+
+    <item
+        android:id="@+id/action_favorite_place_list"
+        android:orderInCategory="100"
+        android:title="@string/favorite_places_list"
+        app:showAsAction="never" />
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"

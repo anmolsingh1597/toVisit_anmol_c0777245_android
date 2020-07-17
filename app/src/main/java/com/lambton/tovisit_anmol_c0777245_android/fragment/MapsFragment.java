@@ -237,15 +237,17 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
             List<Address> addresses = geocoder.getFromLocation(latLng.latitude,latLng.longitude, 1);
             if (addresses != null && addresses.size() > 0) {
 
-                if (addresses.get(0).getAdminArea() != null)
-                    address += addresses.get(0).getAdminArea() + " ";
-                if (addresses.get(0).getLocality() != null)
-                    address += addresses.get(0).getLocality() + " ";
-                if (addresses.get(0).getPostalCode() != null)
-                    address += addresses.get(0).getPostalCode() + " ";
+                if (addresses.get(0).getSubThoroughfare() != null)
+                    address += addresses.get(0).getSubThoroughfare() + ", ";
                 if (addresses.get(0).getThoroughfare() != null)
-                    address += addresses.get(0).getThoroughfare();
-                Toast.makeText(getActivity(), address, Toast.LENGTH_SHORT).show();
+                    address += addresses.get(0).getThoroughfare() + ", ";
+                if (addresses.get(0).getLocality() != null)
+                    address += addresses.get(0).getLocality() + ", ";
+                if (addresses.get(0).getAdminArea() != null)
+                    address += addresses.get(0).getAdminArea();
+                if (addresses.get(0).getPostalCode() != null)
+                    address += "\n" + addresses.get(0).getPostalCode();
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -280,7 +282,7 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
         String address = locationName(marker);
         //getting current date
         Calendar cal = Calendar.getInstance();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, MMM d");
         String currentDate = simpleDateFormat.format(cal.getTime());
         // insert into room db
         FavoritePlaces favoritePlaces = new FavoritePlaces(marker.getPosition().latitude, marker.getPosition().longitude,currentDate, address);
@@ -292,7 +294,6 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
 
     private void displayFavoriteListActivity() {
        startActivity(new Intent(getActivity(), FavoritePlacesActivity.class));
-//       getActivity().finish();
     }
 
     private void displaySnackBar(String text, String id){

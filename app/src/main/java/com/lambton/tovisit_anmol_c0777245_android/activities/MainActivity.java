@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -271,6 +272,10 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             fragment.getmMap().clear();
+            return true;
+        }
+        if(id == R.id.action_favorite_place_list){
+            startActivity(new Intent(this, FavoritePlacesActivity.class));
             return true;
         }
 

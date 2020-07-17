@@ -25,4 +25,7 @@ public interface FavoritePlacesDao {
 
     @Query("SELECT * FROM favoriteplaces ORDER BY locationName")
     List<FavoritePlaces> getAllFavoritePlaces();
+
+    @Query("SELECT * FROM favoriteplaces WHERE id = :id")
+    FavoritePlaces getSelectedPlace(int id);
 }
