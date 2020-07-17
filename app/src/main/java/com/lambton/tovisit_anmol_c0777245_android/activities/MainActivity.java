@@ -10,6 +10,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.model.LatLng;
 import com.lambton.tovisit_anmol_c0777245_android.R;
+import com.lambton.tovisit_anmol_c0777245_android.fragment.MapsFragment;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
