@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lambton.tovisit_anmol_c0777245_android.R;
 import com.lambton.tovisit_anmol_c0777245_android.activities.DirectionAndDistanceActivity;
+import com.lambton.tovisit_anmol_c0777245_android.activities.FavoritePlacesActivity;
 import com.lambton.tovisit_anmol_c0777245_android.roomDatabase.FavoritePlaces;
 import com.lambton.tovisit_anmol_c0777245_android.roomDatabase.FavoritePlacesRoomDb;
 
@@ -120,7 +121,8 @@ public class FavoritePlacesAdapter extends RecyclerView.Adapter<FavoritePlacesAd
         Intent intent = new Intent(context, DirectionAndDistanceActivity.class);
         intent.putExtra("placeID", favoritePlaces.getId());
         context.startActivity(intent);
-        
+        ((FavoritePlacesActivity) context).finish();
+
     }
 
     @Override
