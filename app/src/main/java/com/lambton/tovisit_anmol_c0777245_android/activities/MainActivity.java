@@ -76,11 +76,16 @@ public class MainActivity extends AppCompatActivity {
                 String url = "";
                 switch (tab.getPosition()) {
                     case 0:
-                        url = getPlaceUrl(userLocation.latitude, userLocation.longitude, "hospital");
+                        url = getPlaceUrl(userLocation.latitude, userLocation.latitude, "hospital");
                         break;
                     case 1:
                         url = getPlaceUrl(userLocation.latitude, userLocation.longitude, "restaurant");
                         break;
+                    case 2:
+                        url = getPlaceUrl(userLocation.latitude, userLocation.latitude, "cafe");
+                        break;
+                    case 3:
+                        url = getPlaceUrl(userLocation.latitude, userLocation.latitude, "museum");
                 }
 
                 showNearbyPlaces(url);

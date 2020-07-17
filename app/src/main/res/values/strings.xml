@@ -13,4 +13,6 @@
     <string name="Restaurants">Restaurants</string>
     <string name="nearby_hospitals">Nearby Hospitals</string>
     <string name="nearby_restaurants">Nearby Restaurants</string>
+    <string name="nearby_cafes">Nearby Cafes</string>
+    <string name="nearby_museums">Nearby Museums</string>
 </resources>

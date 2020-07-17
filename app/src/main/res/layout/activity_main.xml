@@ -36,6 +36,18 @@
                 android:layout_height="wrap_content"
                 android:text="@string/nearby_restaurants" />
 
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/cafes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nearby_cafes" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/museums"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nearby_museums" />
+
         </com.google.android.material.tabs.TabLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
