@@ -8,6 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.DirectionAndDistanceActivity">
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_maps"
         android:layout_width="wrap_content"
@@ -16,4 +17,13 @@
         android:layout_margin="@dimen/fab_margin"
         android:background="@drawable/btn_rounded_orange"
         app:srcCompat="@android:drawable/ic_menu_directions" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_map_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="@dimen/fab_margin"
+        android:background="@drawable/btn_rounded_orange"
+        app:srcCompat="@drawable/search_location" />
 </fragment>

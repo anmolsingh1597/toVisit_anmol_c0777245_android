@@ -1,17 +1,30 @@
 package com.lambton.tovisit_anmol_c0777245_android.activities;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -25,6 +38,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.lambton.tovisit_anmol_c0777245_android.R;
 import com.lambton.tovisit_anmol_c0777245_android.roomDatabase.FavoritePlaces;
 import com.lambton.tovisit_anmol_c0777245_android.roomDatabase.FavoritePlacesRoomDb;
@@ -54,6 +68,8 @@ public class DirectionAndDistanceActivity extends FragmentActivity implements On
 
     String placeName;
 
+    FloatingActionButton fabSeacrh;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +78,7 @@ public class DirectionAndDistanceActivity extends FragmentActivity implements On
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
+        mapFragment.setHasOptionsMenu(true);
     }
 
 
@@ -124,6 +140,39 @@ public class DirectionAndDistanceActivity extends FragmentActivity implements On
                 directionFromUserToDestination();
             }
         });
+
+        fabSeacrh =  findViewById(R.id.fab_map_search);
+        fabSeacrh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchPlace();
+            }
+            
+        });
+    }
+
+    private void searchPlace() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View view = layoutInflater.inflate(R.layout.alert_dialog_search, null);
+        builder.setView(view);
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+        final EditText placeText = view.findViewById(R.id.search_place);
+
+        view.findViewById(R.id.alert_search_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchLocation(placeText.getText().toString());
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(placeText.getWindowToken(), 0);
+                alertDialog.dismiss();
+            
+            }
+        });
+
+
     }
 
     private void directionFromUserToDestination() {
@@ -203,5 +252,72 @@ public class DirectionAndDistanceActivity extends FragmentActivity implements On
         destinationLatLng = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
         placeName = locationName(marker);
 
+    }
+
+    @NonNull
+    @Override
+    public MenuInflater getMenuInflater() {
+        return super.getMenuInflater();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        MenuInflater inflater = new MenuInflater(this);
+        getMenuInflater().inflate(R.menu.direction_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.btnSearchDirection);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchLocation(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public void searchLocation(String query) {
+        mMap.clear();
+
+        String location = query;
+        List<Address> addressList = null;
+
+        if (location != null || !location.equals("")) {
+            Geocoder geocoder = new Geocoder(this);
+            try {
+                addressList = geocoder.getFromLocationName(location, 1);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+
+            if (addressList.size() == 0) {
+                Snackbar.make(findViewById(android.R.id.content), "No Location Found", Snackbar.LENGTH_LONG)
+                        .setAction("OK", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                            }
+                        })
+                        .setActionTextColor(getResources().getColor(android.R.color.holo_red_light))
+                        .show();
+            } else {
+                Marker marker;
+                Address address = addressList.get(0);
+                LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                destinationLatLng = latLng;
+                marker = mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+                placeName = locationName(marker);
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+            }
+        }
     }
 }
