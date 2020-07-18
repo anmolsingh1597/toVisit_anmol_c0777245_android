@@ -7,8 +7,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.RadioGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -29,8 +33,10 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -41,6 +47,9 @@ import com.lambton.tovisit_anmol_c0777245_android.volley.GetByVolley;
 import com.lambton.tovisit_anmol_c0777245_android.volley.VolleySingleton;
 
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -54,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
     private FusedLocationProviderClient mClient;
     private LocationCallback mLocationCallback;
     private LocationRequest mLocationRequest;
-
 
 
     private LatLng userLocation;
@@ -128,33 +136,33 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void destinationSelected(final Location location, final GoogleMap map) {
                         if (location == null) {
-                            Snackbar.make(findViewById(android.R.id.content),"No Destination Selected",Snackbar.LENGTH_LONG)
+                            Snackbar.make(findViewById(android.R.id.content), "No Destination Selected", Snackbar.LENGTH_LONG)
                                     .setAction("CLOSE", new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
                                             Toast.makeText(MainActivity.this, "Long Click to select destination", Toast.LENGTH_SHORT).show();
                                         }
                                     })
-                                    .setActionTextColor(getResources().getColor(android.R.color.holo_red_light ))
+                                    .setActionTextColor(getResources().getColor(android.R.color.holo_red_light))
                                     .show();
-                        } else{
+                        } else {
                             /*By Volley Library*/
                             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-                        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
-                                getDirectionUrl(latLng), null, new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                GetByVolley.getDirection(response, map, location);
-                            }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
+                            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
+                                    getDirectionUrl(latLng), null, new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    GetByVolley.getDirection(response, map, location);
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
 
-                            }
-                        });
-                        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
-                    }
+                                }
+                            });
+                            VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+                        }
                     }
                 });
             }
@@ -196,19 +204,19 @@ public class MainActivity extends AppCompatActivity {
 
     private String getPlaceUrl(double latitude, double longitude, String placeType) {
         StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
-        googlePlaceUrl.append("location="+latitude+","+longitude);
-        googlePlaceUrl.append(("&radius="+RADIUS));
-        googlePlaceUrl.append("&type="+placeType);
-        googlePlaceUrl.append("&key="+getString(R.string.google_maps_key));
+        googlePlaceUrl.append("location=" + latitude + "," + longitude);
+        googlePlaceUrl.append(("&radius=" + RADIUS));
+        googlePlaceUrl.append("&type=" + placeType);
+        googlePlaceUrl.append("&key=" + getString(R.string.google_maps_key));
         Log.d(TAG, "getDirectionUrl: " + googlePlaceUrl);
         return googlePlaceUrl.toString();
     }
 
     private String getDirectionUrl(LatLng location) {
         StringBuilder googleDirectionUrl = new StringBuilder("https://maps.googleapis.com/maps/api/directions/json?");
-        googleDirectionUrl.append("origin="+userLocation.latitude+","+userLocation.longitude);
-        googleDirectionUrl.append(("&destination="+location.latitude+","+location.longitude));
-        googleDirectionUrl.append("&key="+getString(R.string.google_maps_key));
+        googleDirectionUrl.append("origin=" + userLocation.latitude + "," + userLocation.longitude);
+        googleDirectionUrl.append(("&destination=" + location.latitude + "," + location.longitude));
+        googleDirectionUrl.append("&key=" + getString(R.string.google_maps_key));
         Log.d(TAG, "getDirectionUrl: " + googleDirectionUrl);
         return googleDirectionUrl.toString();
     }
@@ -268,18 +276,52 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-
+                searchLocation(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-
                 return false;
             }
         });
         return true;
     }
+
+    public void searchLocation(String query) {
+
+        String location = query;
+        List<Address> addressList = null;
+
+        if (location != null || !location.equals("")) {
+            Geocoder geocoder = new Geocoder(this);
+            try {
+                addressList = geocoder.getFromLocationName(location, 1);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+
+            if (addressList.size() == 0) {
+                Snackbar.make(findViewById(android.R.id.content), "No Location Found", Snackbar.LENGTH_LONG)
+                        .setAction("OK", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                            }
+                        })
+                        .setActionTextColor(getResources().getColor(android.R.color.holo_red_light))
+                        .show();
+            } else {
+                Address address = addressList.get(0);
+                LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                fragment.getmMap().addMarker(new MarkerOptions().position(latLng).title(location));
+                fragment.getmMap().animateCamera(CameraUpdateFactory.newLatLng(latLng));
+            }
+        }
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -293,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
             fragment.getmMap().clear();
             return true;
         }
-        if(id == R.id.action_favorite_place_list){
+        if (id == R.id.action_favorite_place_list) {
             startActivity(new Intent(this, FavoritePlacesActivity.class));
             return true;
         }
