@@ -48,22 +48,14 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/btn_show"
+            android:id="@+id/btn_done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:background="@drawable/btn_rounded_orange"
-            android:text="Show"
-            android:textColor="#009688" />
+            android:text="Completed"
+            android:textColor="#009688"/>
 
-        <Button
-            android:id="@+id/btn_delete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:background="@drawable/btn_rounded_red"
-            android:text="Delete"
-            android:textColor="#FFEB3B" />
     </LinearLayout>
 
 </LinearLayout>

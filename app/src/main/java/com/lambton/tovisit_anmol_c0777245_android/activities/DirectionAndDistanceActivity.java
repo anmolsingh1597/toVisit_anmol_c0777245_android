@@ -157,7 +157,7 @@ public class DirectionAndDistanceActivity extends FragmentActivity implements On
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, MMM d");
         String currentDate = simpleDateFormat.format(cal.getTime());
-        favoritePlacesRoomDb.favoritePlacesDao().updateFavoritePlaces(placeID, destinationLatLng.latitude, destinationLatLng.longitude, currentDate, placeName);
+        favoritePlacesRoomDb.favoritePlacesDao().updateFavoritePlaces(placeID, destinationLatLng.latitude, destinationLatLng.longitude, currentDate, placeName, 0);
         finish();
 
     }

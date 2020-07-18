@@ -5,6 +5,8 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 @Database(entities = {FavoritePlaces.class}, version = 1, exportSchema = false)
 public abstract class FavoritePlacesRoomDb extends RoomDatabase {
@@ -14,6 +16,7 @@ public abstract class FavoritePlacesRoomDb extends RoomDatabase {
     public abstract FavoritePlacesDao favoritePlacesDao();
 
     private static volatile FavoritePlacesRoomDb INSTANCE;
+
 
     public static FavoritePlacesRoomDb getINSTANCE(Context context){
         if(INSTANCE == null){
@@ -25,4 +28,5 @@ public abstract class FavoritePlacesRoomDb extends RoomDatabase {
         return INSTANCE;
 
     }
+
 }

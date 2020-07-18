@@ -29,11 +29,18 @@ public class FavoritePlaces {
     @ColumnInfo(name = "locationName")
     private String locationName;
 
-    public FavoritePlaces(@NonNull double latitude, double longitude, @NonNull String assignedDate, @NonNull String locationName) {
+    @NonNull
+    @ColumnInfo(name = "taskStatus")
+    private int taskStatus;
+
+
+
+    public FavoritePlaces(@NonNull double latitude, double longitude, @NonNull String assignedDate, @NonNull String locationName,@NonNull int taskStatus) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.assignedDate = assignedDate;
         this.locationName = locationName;
+        this.taskStatus = taskStatus;
     }
 
     public int getId() {
@@ -76,5 +83,14 @@ public class FavoritePlaces {
 
     public void setLocationName(@NonNull String locationName) {
         this.locationName = locationName;
+    }
+
+
+    public int getTaskStatus() {
+        return taskStatus;
+    }
+
+    public void setTaskStatus(int taskStatus) {
+        this.taskStatus = taskStatus;
     }
 }

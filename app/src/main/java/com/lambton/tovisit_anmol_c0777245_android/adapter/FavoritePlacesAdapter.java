@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,25 +72,31 @@ public class FavoritePlacesAdapter extends RecyclerView.Adapter<FavoritePlacesAd
     }
 
     @Override
-    public void onBindViewHolder(@NonNull FavoritePlacesAdapter.FavoritePlacesListViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final FavoritePlacesAdapter.FavoritePlacesListViewHolder holder, int position) {
+
         final FavoritePlaces favoritePlaces = favoritePlacesList.get(position);
+        if(favoritePlaces.getTaskStatus() == 1){
+            holder.itemView.setBackgroundColor(Color.GREEN);
+            holder.itemView.findViewById(R.id.btn_done).setVisibility(View.INVISIBLE);
+        }
         holder.placeName.setText("Place: "+favoritePlaces.getLocationName());
         holder.lat.setText("Latitude: "+String.valueOf(favoritePlaces.getLatitude()));
         holder.lng.setText("Longitude: "+String.valueOf(favoritePlaces.getLatitude()));
         holder.date.setText("Date: "+favoritePlaces.getAssignedDate());
-        holder.itemView.findViewById(R.id.btn_show).setOnClickListener(new View.OnClickListener() {
+        holder.itemView.findViewById(R.id.btn_done).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                jumpToMaps(favoritePlaces);
+
+                holder.itemView.setBackgroundColor(Color.GREEN);
+                favoritePlacesRoomDb.favoritePlacesDao().updateFavoritePlaces(favoritePlaces.getId(),
+                        favoritePlaces.getLatitude(),
+                        favoritePlaces.getLongitude(),
+                        favoritePlaces.getAssignedDate(),
+                        favoritePlaces.getLocationName(), 1);
+                holder.itemView.findViewById(R.id.btn_done).setVisibility(View.INVISIBLE);
             }
         });
-        
-        holder.itemView.findViewById(R.id.btn_delete).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteLocation(favoritePlaces);
-            }
-        });
+
     }
 
     private void deleteLocation(final FavoritePlaces favoritePlaces) {
@@ -117,13 +124,7 @@ public class FavoritePlacesAdapter extends RecyclerView.Adapter<FavoritePlacesAd
         notifyDataSetChanged();
     }
 
-    private void jumpToMaps(final FavoritePlaces favoritePlaces) {
-        Intent intent = new Intent(context, DirectionAndDistanceActivity.class);
-        intent.putExtra("placeID", favoritePlaces.getId());
-        context.startActivity(intent);
-        ((FavoritePlacesActivity) context).finish();
 
-    }
 
     @Override
     public int getItemCount() {
