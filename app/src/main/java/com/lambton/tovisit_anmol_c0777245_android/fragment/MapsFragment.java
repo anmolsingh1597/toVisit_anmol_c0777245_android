@@ -284,6 +284,11 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, MMM d");
         String currentDate = simpleDateFormat.format(cal.getTime());
+
+        if(address == ""){
+            address = currentDate;
+        }
+
         // insert into room db
         FavoritePlaces favoritePlaces = new FavoritePlaces(marker.getPosition().latitude, marker.getPosition().longitude,currentDate, address, 0);
         favoritePlacesRoomDb.favoritePlacesDao().insertFavoritePlaces(favoritePlaces);
