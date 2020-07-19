@@ -45,7 +45,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragListener, GoogleMap.OnMarkerClickListener{
+public class MapsFragment extends Fragment implements GoogleMap.OnMarkerDragListener, GoogleMap.OnMarkerClickListener {
 
     private static final String TAG = "MapsFragment";
     public static final String TOAST_ID = "Toast";
@@ -71,9 +71,6 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
 
     public static Location userLocation;
 
-    public static void setUserLocation(Location userLocation) {
-        MapsFragment.userLocation = userLocation;
-    }
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -100,42 +97,11 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
             mMap.setOnMarkerClickListener(MapsFragment.this);
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setZoomControlsEnabled(true);
-//            Toast.makeText(getActivity(),String.valueOf(userLocation.getLatitude()), Toast.LENGTH_SHORT).show();
-//            setHomeMarker(userLocation);
-
-            mapTypeRadioGroup = getActivity().findViewById(R.id.maps_type_group);
-
-            mapTypeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    if(checkedId == R.id.default_map){
-                        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                    }else if (checkedId == R.id.hybrid_map){
-                        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                    }else if (checkedId == R.id.terrain_map){
-                        mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-                    }else if (checkedId == R.id.satellite_map){
-                        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                    }
-                }
-            });
 
 
-            mClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-//                        mMap.addMarker(new MarkerOptions().position(latLng));
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-
-                        ((MainActivity)getActivity()).showLaunchNearbyPlaces(latLng);
-                    }
-                }
-            });
 
             // add long press gesture on map
-            googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                 @Override
                 public void onMapLongClick(LatLng latLng) {
                     destLocation = latLng;
@@ -146,7 +112,10 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
                     setMarker(destination);
                 }
             });
+
         }
+
+
     };
 
 
@@ -167,6 +136,47 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mClient = LocationServices.getFusedLocationProviderClient(getActivity());
+
+        mapTypeRadioGroup = getActivity().findViewById(R.id.maps_type_group);
+
+        mapTypeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.default_map) {
+                    mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                } else if (checkedId == R.id.hybrid_map) {
+                    mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                } else if (checkedId == R.id.terrain_map) {
+                    mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                } else if (checkedId == R.id.satellite_map) {
+                    mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                }
+            }
+        });
+
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+//                        mMap.addMarker(new MarkerOptions().position(latLng));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+
+                    ((MainActivity) getActivity()).showLaunchNearbyPlaces(latLng);
+                }
+            }
+        });
     }
 
 
