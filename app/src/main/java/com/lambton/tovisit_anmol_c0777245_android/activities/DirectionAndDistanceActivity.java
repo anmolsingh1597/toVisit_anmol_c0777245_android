@@ -3,10 +3,8 @@ package com.lambton.tovisit_anmol_c0777245_android.activities;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +22,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -101,6 +98,7 @@ public class DirectionAndDistanceActivity extends FragmentActivity implements On
 
         mMap = googleMap;
         mMap.setOnMarkerDragListener(DirectionAndDistanceActivity.this);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling

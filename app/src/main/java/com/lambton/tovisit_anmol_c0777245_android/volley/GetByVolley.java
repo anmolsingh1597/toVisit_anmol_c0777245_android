@@ -3,6 +3,7 @@ package com.lambton.tovisit_anmol_c0777245_android.volley;
 import android.graphics.Color;
 import android.location.Location;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -69,6 +70,7 @@ public class GetByVolley {
                 .snippet("Duration : " + duration + " || Distance : " + distance)
                 .draggable(true);
         googleMap.addMarker(options);
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
         for (int i=0; i<directionsList.length; i++) {
             PolylineOptions polylineOptions = new PolylineOptions()
                     .color(Color.BLUE)

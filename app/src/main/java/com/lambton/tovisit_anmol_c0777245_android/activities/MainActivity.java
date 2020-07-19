@@ -7,7 +7,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -19,8 +18,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.RadioGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -35,6 +32,8 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -168,10 +167,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if (!hasPermission())
+        if (!hasPermission()) {
             requestLocationPermission();
-        else
+        } else {
             startUpdateLocation();
+        }
     }
 
 
@@ -236,9 +236,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 Location location = locationResult.getLastLocation();
-                userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-//                Log.d(TAG, "onLocationResult: " + location);
-                fragment.setHomeMarker(location);
+                if (location != null) {
+                    userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                    Log.d(TAG, "onLocationResult: " + location);
+                    fragment.setHomeMarker(location);
+                }
+
 
             }
         };
@@ -303,8 +306,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-
-            if (addressList.equals(null) || addressList.size() == 0) {
+            if (addressList.get(0) == null || addressList.size() == 0) {
                 Snackbar.make(findViewById(android.R.id.content), "No Location Found", Snackbar.LENGTH_LONG)
                         .setAction("OK", new View.OnClickListener() {
                             @Override

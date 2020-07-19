@@ -10,7 +10,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -19,7 +18,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -58,8 +56,6 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
 
     GoogleMap mMap;
 
-    LatLng userLocation;
-
     public GoogleMap getmMap() {
         return mMap;
     }
@@ -72,6 +68,12 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
 
     LatLng destLocation;
     Location destination;
+
+    public static Location userLocation;
+
+    public static void setUserLocation(Location userLocation) {
+        MapsFragment.userLocation = userLocation;
+    }
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -97,6 +99,9 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
             mMap.setOnMarkerDragListener(MapsFragment.this);
             mMap.setOnMarkerClickListener(MapsFragment.this);
             mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setZoomControlsEnabled(true);
+//            Toast.makeText(getActivity(),String.valueOf(userLocation.getLatitude()), Toast.LENGTH_SHORT).show();
+//            setHomeMarker(userLocation);
 
             mapTypeRadioGroup = getActivity().findViewById(R.id.maps_type_group);
 
@@ -184,8 +189,17 @@ public class MapsFragment extends Fragment implements  GoogleMap.OnMarkerDragLis
     }
 
     public void setHomeMarker(Location location) {
+
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(callback);
+        }
+
+        if(mMap!=null){
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+        }
     }
 
     public void getDestination(IPassData callback) {
