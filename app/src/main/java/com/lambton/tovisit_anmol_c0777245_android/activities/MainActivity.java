@@ -304,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-            if (addressList.size() == 0) {
+            if (addressList.equals(null) || addressList.size() == 0) {
                 Snackbar.make(findViewById(android.R.id.content), "No Location Found", Snackbar.LENGTH_LONG)
                         .setAction("OK", new View.OnClickListener() {
                             @Override
