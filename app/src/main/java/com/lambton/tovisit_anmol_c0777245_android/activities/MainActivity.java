@@ -301,26 +301,28 @@ public class MainActivity extends AppCompatActivity {
             try {
                 addressList = geocoder.getFromLocationName(location, 1);
 
+
+                if (addressList.size() == 0) {
+                    Snackbar.make(findViewById(android.R.id.content), "No Location Found", Snackbar.LENGTH_LONG)
+                            .setAction("OK", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                }
+                            })
+                            .setActionTextColor(getResources().getColor(android.R.color.holo_red_light))
+                            .show();
+                } else {
+                    Address address = addressList.get(0);
+                    LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                    fragment.getmMap().addMarker(new MarkerOptions().position(latLng).title(location));
+                    fragment.getmMap().animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
 
-            if (addressList.get(0) == null || addressList.size() == 0) {
-                Snackbar.make(findViewById(android.R.id.content), "No Location Found", Snackbar.LENGTH_LONG)
-                        .setAction("OK", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                            }
-                        })
-                        .setActionTextColor(getResources().getColor(android.R.color.holo_red_light))
-                        .show();
-            } else {
-                Address address = addressList.get(0);
-                LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                fragment.getmMap().addMarker(new MarkerOptions().position(latLng).title(location));
-                fragment.getmMap().animateCamera(CameraUpdateFactory.newLatLng(latLng));
-            }
         }
     }
 

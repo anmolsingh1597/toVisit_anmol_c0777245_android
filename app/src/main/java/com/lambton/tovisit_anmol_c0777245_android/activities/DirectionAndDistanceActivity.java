@@ -292,30 +292,30 @@ public class DirectionAndDistanceActivity extends FragmentActivity implements On
             try {
                 addressList = geocoder.getFromLocationName(location, 1);
 
+                if (addressList.size() == 0) {
+                    Snackbar.make(findViewById(android.R.id.content), "No Location Found", Snackbar.LENGTH_LONG)
+                            .setAction("OK", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                }
+                            })
+                            .setActionTextColor(getResources().getColor(android.R.color.holo_red_light))
+                            .show();
+                } else {
+                    Marker marker;
+                    Address address = addressList.get(0);
+                    LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                    destinationLatLng = latLng;
+                    marker = mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+                    placeName = locationName(marker);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
 
-
-            if (addressList.equals(null) || addressList.size() == 0) {
-                Snackbar.make(findViewById(android.R.id.content), "No Location Found", Snackbar.LENGTH_LONG)
-                        .setAction("OK", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                            }
-                        })
-                        .setActionTextColor(getResources().getColor(android.R.color.holo_red_light))
-                        .show();
-            } else {
-                Marker marker;
-                Address address = addressList.get(0);
-                LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                destinationLatLng = latLng;
-                marker = mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-                placeName = locationName(marker);
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-            }
         }
     }
 }
